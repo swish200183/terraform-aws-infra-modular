@@ -66,3 +66,13 @@ terraform destroy
 - Passing data between modules without tight coupling
 - Reusing a shared remote state backend across multiple projects
 - Refactoring monolithic configuration into maintainable, modular code
+
+## CI/CD pipeline (GitHub Actions)
+
+A GitHub Actions workflow (`.github/workflows/terraform.yml`) is included, designed to run `terraform fmt`, `terraform validate`, and `terraform plan` on every pull request, and `terraform apply` automatically on merge to `main`.
+
+**AWS credentials (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`) are intentionally not configured as repository secrets.** With them unset, the pipeline runs through `Checkout` and `Setup Terraform` successfully and then fails at the `Configure AWS credentials` step — by design.
+
+This is a deliberate choice, not an oversight: an automatic `apply` on every merge would provision real AWS resources (and incur cost) without a manual checkpoint. Rather than run that risk on a repository meant for demonstration, the pipeline is left fully built and reviewable, with credentials withheld until there's a specific reason to run it end-to-end.
+
+To run it live, add the two secrets under **Settings → Secrets and variables → Actions**, ideally scoped to an IAM user with least-privilege permissions rather than full admin access.
